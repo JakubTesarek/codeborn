@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: docker.io/postgres:16
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${CODEBORN_DB_USER}
+      POSTGRES_PASSWORD: ${CODEBORN_DB_PASSWORD}
+      POSTGRES_DB: ${CODEBORN_DB_NAME}
+    ports:
+      - "${CODEBORN_DB_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

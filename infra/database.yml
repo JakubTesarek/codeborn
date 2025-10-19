@@ -1,0 +1,71 @@
+- hosts: all
+  become: yes
+  vars_files:
+    - secrets.yml
+  
+  tasks:
+    - name: Create keyring directory
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Add PostgreSQL GPG key
+      get_url:
+        url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+        dest: /etc/apt/keyrings/postgresql.asc
+        mode: '0644'
+
+    - name: Add PostgreSQL repository
+      apt_repository:
+        repo: "deb [signed-by=/etc/apt/keyrings/postgresql.asc] http://apt.postgresql.org/pub/repos/apt {{ ansible_distribution_release }}-pgdg main"
+        state: present
+        filename: pgdg
+        update_cache: yes
+
+    - name: Install PostgreSQL
+      apt:
+        name: postgresql-16
+        state: present
+
+    - name: Ensure PostgreSQL is running and enabled
+      service:
+        name: postgresql
+        state: started
+        enabled: true
+
+    - name: Install psycopg2
+      apt:
+        name:
+          - python3-psycopg2
+        state: present
+
+
+    - name: Ensure PostgreSQL user exists
+      become_user: postgres
+      community.postgresql.postgresql_user:
+        name: "{{ database.user }}"
+        password: "{{ database.password }}"
+        role_attr_flags: LOGIN
+        state: present
+
+    - name: Ensure PostgreSQL database exists
+      become_user: postgres
+      community.postgresql.postgresql_db:
+        name: "{{ database.name }}"
+        owner: "{{ database.user }}"
+        encoding: 'UTF8'
+        state: present
+
+    - name: Ensure PostgreSQL listens only locally
+      lineinfile:
+        path: /etc/postgresql/16/main/postgresql.conf
+        regexp: '^#?listen_addresses'
+        line: "listen_addresses = 'localhost'"
+      notify: Restart PostgreSQL
+
+  handlers:
+    - name: Restart PostgreSQL
+      service:
+        name: postgresql
+        state: restarted

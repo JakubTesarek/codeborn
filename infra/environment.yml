@@ -1,0 +1,35 @@
+- hosts: all
+  become: yes
+  
+  tasks:
+    - name: Ensure apt cache updated
+      apt:
+        update_cache: yes
+    
+    - name: Install tools for PPA
+      apt:
+        name: software-properties-common
+        state: present
+    
+    - name: Add Deadsnakes PPA (for Python 3.13)
+      apt_repository:
+        repo: ppa:deadsnakes/ppa
+        state: present
+        update_cache: yes
+    
+    - name: Install base packages
+      apt:
+        name:
+          - nginx
+          - git
+          - docker.io
+          - python3.13
+          - python3.13-venv
+        state: present
+    
+    - name: Start Docker
+      service:
+        name: docker
+        state: started
+        enabled: true
+      

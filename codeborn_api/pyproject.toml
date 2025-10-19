@@ -1,0 +1,23 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["codeborn_api/codeborn_api"]
+
+[project]
+name = "codeborn-api"
+version = "0.1.0"
+description = "Codeborn API"
+requires-python = ">=3.12"
+
+dependencies = [
+    "codeborn-shared @ file:///${PROJECT_ROOT}/src/codeborn_shared",
+    "fastapi>=0.118.0",
+    "uvicorn>=0.37.0",
+    "authlib>=1.6.5",
+    "itsdangerous>=2.2.0",
+    "yarl>=1.22.0",
+    "pyjwt>=2.10.1",
+    "pydantic>=2.11.9"
+]
