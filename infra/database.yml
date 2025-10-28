@@ -1,7 +1,7 @@
 - hosts: all
   become: yes
   vars_files:
-    - secrets.yml
+    - ../.production.secrets.yml
   
   tasks:
     - name: Create keyring directory
