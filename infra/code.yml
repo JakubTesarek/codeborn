@@ -62,6 +62,7 @@
         key_file: "{{ deploy_key_path }}"
         update: yes
         accept_hostkey: yes
+        force: yes
 
 
 

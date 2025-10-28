@@ -30,8 +30,6 @@ export function MapViewport({ tiles, onSelect, selected }: MapViewportProps) {
     const ctx = canvas?.getContext('2d')
     if (!canvas || !ctx) return
 
-    const sizePx = VIEW_SIZE * TILE_SIZE
-
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 
     // shift drawing by margin
