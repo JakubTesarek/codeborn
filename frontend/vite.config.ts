@@ -12,7 +12,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:8800', // your FastAPI backend
+        target: 'https://api.codeborn.app',
         changeOrigin: true,
         secure: false,
       },

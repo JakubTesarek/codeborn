@@ -1,18 +1,19 @@
 - hosts: all
   become: yes
   vars:
-    app_root: /srv/codeborn
     env_file: "{{ app_root }}/.env"
     prod_env_file: "{{ app_root }}/.production.env"
     vault_pass_file: /etc/secret/.ansible_vault_pass.txt
+    uv_local_bin: /root/.local/bin/uv
+    uv_global_bin: /usr/local/bin/uv
 
   vars_files:
     - ../.production.secrets.yml
 
   tasks:
-    - name: Ensure /etc/codeborn exists
+    - name: Ensure /etc/secret exists
       file:
-        path: /etc/codeborn
+        path: /etc/secret
         state: directory
         owner: root
         group: codeborn
@@ -33,3 +34,32 @@
         owner: codeborn
         group: codeborn
         mode: "0644"
+
+    - name: Install uv and uvx globally
+      ansible.builtin.shell: |
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+      args:
+        creates: "{{ uv_local_bin }}"
+
+    - name: Symlink uv to global bin for global access
+      ansible.builtin.file:
+        src: "{{ uv_local_bin }}"
+        dest: "{{ uv_global_bin }}"
+        state: link
+        force: yes
+
+    - name: Ensure uv binary is executable
+      ansible.builtin.file:
+        path: "{{ uv_global_bin }}"
+        mode: '0755'
+
+    - name: Create virtual environment using uv
+      ansible.builtin.command: "{{ uv_global_bin }} venv --python {{ python_bin }}"
+      args:
+        chdir: "{{ app_root }}"
+        creates: "{{ venv_path }}/bin/python"
+
+    - name: Sync dependencies from uv.lock
+      ansible.builtin.command: "{{ uv_global_bin }} sync"
+      args:
+        chdir: "{{ app_root }}"

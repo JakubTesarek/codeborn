@@ -11,7 +11,7 @@
         name: software-properties-common
         state: present
     
-    - name: Add Deadsnakes PPA (for Python 3.13)
+    - name: Add Deadsnakes PPA
       apt_repository:
         repo: ppa:deadsnakes/ppa
         state: present
@@ -23,8 +23,8 @@
           - nginx
           - git
           - docker.io
-          - python3.13
-          - python3.13-venv
+          - "{{ python_bin }}"
+          - "{{ python_bin }}-venv"
         state: present
     
     - name: Start Docker

@@ -2,11 +2,11 @@
 level = "DEBUG"
 
 [api]
-host = "0.0.0.0"
-port = 8800
-frontend_url = "http://localhost:5173"
+host = "127.0.0.1"
+port = 8000
+frontend_url = "https://codeborn.app"
 app_name = "Codeborn"
-auto_reload = true
+auto_reload = false
 
 [agents]
 runtime_class_name = "codeborn/engine.agents.container.PodmanAgent"
@@ -27,6 +27,8 @@ interval = 30.0
 interval = 25.0
 
 [database]
+port = 5432
+host = "localhost"
 init_schema = true
 pool_min_size = 2
 pool_max_size = 10
@@ -35,7 +37,7 @@ command_timeout = 30.0
 models = ["codeborn.model", "aerich.models"]
 
 [github]
-redirect_url="http://localhost:8800/api/auth/github/callback"
+redirect_url="https://api.codeborn.app/api/auth/github/callback"
 access_token_url='https://github.com/login/oauth/access_token'
 authorize_url='https://github.com/login/oauth/authorize'
 api_base_url='https://api.github.com/'

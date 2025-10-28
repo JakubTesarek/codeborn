@@ -1,0 +1,72 @@
+- hosts: all
+  become: yes
+  vars:
+    domain: api.codeborn.app
+    email: jakub@tesarek.me
+    api_port: 8000
+  tasks:
+    - name: Install Nginx and Certbot
+      apt:
+        name:
+          - nginx
+          - python3-certbot-nginx
+        state: present
+        update_cache: yes
+
+    - name: Create Nginx site for API
+      copy:
+        dest: /etc/nginx/sites-available/{{ domain }}
+        content: |
+          server {
+              listen 80;
+              server_name {{ domain }};
+
+              # Required for Let's Encrypt HTTP-01 validation
+              location ~ /.well-known/acme-challenge/ {
+                  root /var/www/html;
+              }
+
+              location / {
+                  proxy_pass http://127.0.0.1:{{ api_port }}/;
+                  proxy_set_header Host $host;
+                  proxy_set_header X-Real-IP $remote_addr;
+                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                  proxy_set_header X-Forwarded-Proto $scheme;
+              }
+          }
+      notify: Reload Nginx
+
+    - name: Enable Nginx site
+      file:
+        src: /etc/nginx/sites-available/{{ domain }}
+        dest: /etc/nginx/sites-enabled/{{ domain }}
+        state: link
+      notify: Reload Nginx
+
+    - name: Remove default Nginx site
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+      notify: Reload Nginx
+
+    - name: Ensure ACME challenge directory exists
+      file:
+        path: /var/www/html/.well-known/acme-challenge
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: "0755"
+
+    - name: Obtain SSL certificate for API subdomain
+      command: >
+        certbot --nginx --non-interactive --agree-tos
+        -m {{ email }}
+        -d {{ domain }}
+      args:
+        creates: /etc/letsencrypt/live/{{ domain }}/fullchain.pem
+
+  handlers:
+    - name: Reload Nginx
+      service:
+        name: nginx
+        state: reloaded
