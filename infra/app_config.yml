@@ -1,0 +1,35 @@
+- hosts: all
+  become: yes
+  vars:
+    app_root: /srv/codeborn
+    env_file: "{{ app_root }}/.env"
+    prod_env_file: "{{ app_root }}/.production.env"
+    vault_pass_file: /etc/secret/.ansible_vault_pass.txt
+
+  vars_files:
+    - ../.production.secrets.yml
+
+  tasks:
+    - name: Ensure /etc/codeborn exists
+      file:
+        path: /etc/codeborn
+        state: directory
+        owner: root
+        group: codeborn
+        mode: "0750"
+
+    - name: Write app vault password file
+      copy:
+        content: "{{ ansible.vault_pass }}"
+        dest: "{{ vault_pass_file }}"
+        owner: root
+        group: codeborn
+        mode: "0640"
+
+    - name: Write .env (set app mode to production)
+      copy:
+        content: "CODEBORN_APP_MODE=production\n"
+        dest: "{{ env_file }}"
+        owner: codeborn
+        group: codeborn
+        mode: "0644"
