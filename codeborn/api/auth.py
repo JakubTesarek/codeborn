@@ -49,7 +49,7 @@ async def get_current_user(request: Request, config: CodebornConfig = Depends(ge
     if not (token := request.cookies.get('auth_token')):
         raise HTTPException(status_code=401, detail='Missing auth token')
 
-    if not (token_data := verify_token(token, config.jwt)):
+    if not (token_data := verify_token(token, config.auth.jwt)):
         raise HTTPException(status_code=401, detail='Invalid or expired token')
 
     if not (user := await User.get_or_none(gid=token_data['sub'])):
