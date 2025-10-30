@@ -1,0 +1,4 @@
+- name: Sync Python dependencies with uv
+  command: "{{ uv_global_bin }} sync"
+  args:
+    chdir: "{{ app_root }}"

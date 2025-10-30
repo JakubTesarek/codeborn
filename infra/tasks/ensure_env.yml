@@ -1,0 +1,7 @@
+- name: Ensure .env sets production mode
+  copy:
+    content: "CODEBORN_APP_MODE=production\n"
+    dest: "{{ app_root }}/.env"
+    owner: "{{ username }}"
+    group: "{{ group }}"
+    mode: "0644"

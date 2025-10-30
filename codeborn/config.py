@@ -250,13 +250,22 @@ class UnitConfig(BaseModel):
 
 class MapGeneratorConfig(BaseModel):
     """Map generator configuration."""
+
     width: int
     height: int
 
 
 class GeneratorsConfig(BaseModel):
     """Generators configuration."""
+
     map: MapGeneratorConfig
+
+
+class AuthConfig(BaseModel):
+    """Authentication configuration."""
+
+    cookie_domain: str
+    jwt: JwtConfig
 
 
 class ApiConfig(BaseModel):
@@ -265,6 +274,7 @@ class ApiConfig(BaseModel):
     host: str
     port: int
     frontend_url: str
+    domain: str
     app_name: str
     auto_reload: bool = False
     session_key: str
@@ -279,7 +289,7 @@ class CodebornConfig(BaseSettings):
     lifecycle: LifecycleConfig
     database: DatabaseConfig
     github: GithubConfig
-    jwt: JwtConfig
+    auth: AuthConfig
     units: dict[UnitType, UnitConfig]
     terrain: dict[TerrainType, TerrainConfig]
     generators: GeneratorsConfig

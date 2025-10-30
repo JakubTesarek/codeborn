@@ -1,0 +1,9 @@
+- name: Restart FastAPI service
+  systemd:
+    name: "{{ api_service }}"
+    state: restarted
+
+- name: Reload Nginx
+  service:
+    name: nginx
+    state: reloaded

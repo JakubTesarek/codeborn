@@ -17,8 +17,8 @@ function GitHubIcon(props: React.SVGProps<SVGSVGElement>) {
 
 function LoginButton() {
   const handleLogin = () => {
-    window.location.href = '/api/auth/github/login'
-  }
+    window.location.href = `${import.meta.env.VITE_API_BASE_URL}/auth/github/login`
+  }   
 
   return (
     <Button onClick={handleLogin} variant="secondary">

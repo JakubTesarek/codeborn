@@ -1,5 +1,24 @@
 username: codeborn
+group: codeborn
 ssh_public_key_path: '~/.ssh/id_ed25519.pub'
+email: jakub@tesarek.me
+repo_url: "git@github.com:JakubTesarek/codeborn.git"
+
 python_bin: python3.13
-app_root: /srv/codeborn
+api_service: codeborn-api
+
 venv_path: "{{ app_root }}/.venv"
+env_file: "{{ app_root }}/.env"
+prod_env_file: "{{ app_root }}/.production.env"
+deploy_key_path: "/home/codeborn/.ssh/id_deploy"
+vault_pass_file: /etc/secret/.ansible_vault_pass.txt
+
+uv_local_bin: /root/.local/bin/uv
+uv_global_bin: /usr/local/bin/uv
+
+app_root: /srv/codeborn
+frontend_root: "{{ app_root }}/frontend"
+frontend_dist: "{{ frontend_root }}/dist"
+
+domain_frontend: codeborn.app
+domain_api: api.codeborn.app

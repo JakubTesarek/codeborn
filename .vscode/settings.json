@@ -9,6 +9,7 @@
         "fastapi",
         "gids",
         "gitpython",
+        "healthcheck",
         "hexsha",
         "itertools",
         "itsdangerous",

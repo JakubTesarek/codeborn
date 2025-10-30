@@ -1,77 +1,51 @@
 - hosts: all
   become: yes
-  vars:
-    repo_url: "git@github.com:JakubTesarek/codeborn.git"
-    repo_dest: "/srv/codeborn"
-    deploy_key_path: "/home/codeborn/.ssh/id_deploy"
-
   vars_files:
     - ../.production.secrets.yml
 
   tasks:
     - name: Ensure destination directory exists
       file:
-        path: "{{ repo_dest }}"
+        path: "{{ app_root }}"
         state: directory
-        owner: codeborn
-        group: codeborn
+        owner: "{{ username }}"
+        group: "{{ group }}"
         mode: "0755"
 
     - name: Ensure .ssh directory exists for deploy key
       file:
-        path: "/home/codeborn/.ssh"
+        path: "/home/{{ username }}/.ssh"
         state: directory
-        owner: codeborn
-        group: codeborn
+        owner: "{{ username }}"
+        group: "{{ group }}"
         mode: "0700"
 
     - name: Write deploy private key from vault
       copy:
         content: "{{ deploy_key.private }}"
         dest: "{{ deploy_key_path }}"
-        owner: codeborn
-        group: codeborn
+        owner: "{{ username }}"
+        group: "{{ group }}"
         mode: "0600"
 
     - name: Write deploy public key from vault
       copy:
         content: "{{ deploy_key.public }}"
         dest: "{{ deploy_key_path }}.pub"
-        owner: codeborn
-        group: codeborn
+        owner: "{{ username }}"
+        group: "{{ group }}"
         mode: "0644"
 
     - name: Configure SSH for GitHub
-      become_user: codeborn
+      become_user: "{{ username }}"
       copy:
-        dest: "/home/codeborn/.ssh/config"
+        dest: "/home/{{ username }}/.ssh/config"
         content: |
           Host github.com
             IdentityFile {{ deploy_key_path }}
             IdentitiesOnly yes
-        owner: codeborn
-        group: codeborn
+        owner: "{{ username }}"
+        group: "{{ group }}"
         mode: "0600"
 
-    - name: Clone or update repo
-      become_user: codeborn
-      git:
-        repo: "{{ repo_url }}"
-        dest: "{{ repo_dest }}"
-        version: master
-        key_file: "{{ deploy_key_path }}"
-        update: yes
-        accept_hostkey: yes
-        force: yes
-
-
-
-
-
-
-
-
-
-
-
-
+    - import_tasks: tasks/pull_repo.yml

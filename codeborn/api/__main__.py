@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 
+from fastapi.responses import RedirectResponse
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -34,14 +35,21 @@ app.add_middleware(
     allow_headers=['*'],
 )
 
-app.include_router(auth.router, prefix='/api/auth')
-app.include_router(repos.router, prefix='/api/repos')
-app.include_router(bots.router, prefix='/api/bots')
+app.include_router(auth.router, prefix='/auth')
+app.include_router(repos.router, prefix='/repos')
+app.include_router(bots.router, prefix='/bots')
 
 
 @app.get('/')
-async def root():
-    return {'message': 'Codeborn Viewer API connected'}
+async def root() -> RedirectResponse:
+    """Redirect user to docs."""
+    return RedirectResponse(url=app.docs_url)  # type: ignore
+
+
+@app.get('/healthcheck')
+async def healthcheck() -> dict[str, str]:
+    """Healthcheck endpoint."""
+    return {'status': 'ok'}
 
 
 if __name__ == '__main__':

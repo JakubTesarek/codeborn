@@ -5,8 +5,12 @@ level = "DEBUG"
 host = "127.0.0.1"
 port = 8000
 frontend_url = "https://codeborn.app"
+domain = "codeborn.app"
 app_name = "Codeborn"
 auto_reload = false
+
+[auth]
+cookie_domain = '.codeborn.app'
 
 [agents]
 runtime_class_name = "codeborn/engine.agents.container.PodmanAgent"

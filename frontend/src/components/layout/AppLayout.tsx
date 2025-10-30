@@ -11,7 +11,7 @@ export function AppLayout() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    apiFetch<User>('/api/auth/me', { suppressToast: true })
+    apiFetch<User>('/auth/me', { suppressToast: true })
       .then(setUser)
       .catch(() => setUser(null))
       .finally(() => setLoading(false))

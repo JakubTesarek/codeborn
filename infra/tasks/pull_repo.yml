@@ -1,0 +1,10 @@
+- name: Update Codeborn repository
+  become_user: "{{ username }}"
+  git:
+    repo: "{{ repo_url }}"
+    dest: "{{ app_root }}"
+    version: master
+    key_file: "{{ deploy_key_path }}"
+    update: yes
+    accept_hostkey: yes
+    force: yes

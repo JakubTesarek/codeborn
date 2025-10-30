@@ -8,7 +8,7 @@ type LogoutButtonProps = {
 
 export function LogoutButton({ onLogout }: LogoutButtonProps) {
   const handleLogout = async () => {
-    await apiFetch('/api/auth/logout', { method: 'POST' })
+    await apiFetch('/auth/logout', { method: 'POST' })
     onLogout()
   }
 

@@ -60,12 +60,13 @@ async def github_callback(
     response = RedirectResponse(config.api.frontend_url)
     response.set_cookie(
         key='auth_token',
+        domain=config.auth.cookie_domain,
         path='/',
-        value=create_token(str(user.gid), config.jwt),
+        value=create_token(str(user.gid), config.auth.jwt),
         httponly=True,
         secure=False,
         samesite='lax',
-        max_age=config.jwt.ttl
+        max_age=config.auth.jwt.ttl
     )
     return response
 

@@ -1,0 +1,8 @@
+- hosts: all
+  become: yes
+  tasks:
+    - import_tasks: tasks/pull_repo.yml
+    - import_tasks: tasks/ensure_env.yml
+    - import_tasks: tasks/sync_python_deps.yml
+    - import_tasks: tasks/build_frontend.yml
+    - import_tasks: tasks/restart_api.yml

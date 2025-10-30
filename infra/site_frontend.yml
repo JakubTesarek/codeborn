@@ -1,0 +1,32 @@
+- hosts: all
+  become: yes
+
+  tasks:
+    - import_tasks: tasks/build_frontend.yml
+
+    - import_tasks: tasks/issue_cert.yml
+      vars:
+        domain: "{{ domain_frontend }}"
+
+    - name: Install frontend Nginx config
+      template:
+        src: templates/nginx_site.j2
+        dest: "/etc/nginx/sites-available/{{ domain_frontend }}"
+      vars:
+        web_root: "{{ frontend_dist }}"
+        domain: "{{ domain_frontend }}"
+        extra_domains: "www.{{ domain_frontend }}"
+      notify: Reload Nginx
+
+    - name: Enable site
+      file:
+        src: "/etc/nginx/sites-available/{{ domain_frontend }}"
+        dest: "/etc/nginx/sites-enabled/{{ domain_frontend }}"
+        state: link
+      notify: Reload Nginx
+
+  handlers:
+    - name: Reload Nginx
+      service:
+        name: nginx
+        state: reloaded

@@ -1,0 +1,17 @@
+- name: Ensure ACME webroot exists
+  file:
+    path: /var/www/html/.well-known/acme-challenge
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: "0755"
+
+- name: Obtain Let's Encrypt certificate
+  command: >
+    certbot certonly --webroot
+    -w /var/www/html
+    --non-interactive --agree-tos
+    -m {{ email }}
+    -d {{ domain }}
+  args:
+    creates: /etc/letsencrypt/live/{{ domain }}/fullchain.pem

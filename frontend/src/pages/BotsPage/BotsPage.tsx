@@ -9,7 +9,7 @@ export function BotsPage() {
 
   const fetchBots = useCallback(async () => {
     try {
-      const data = await apiFetch<{ bots: Bot[] }>('/api/bots/')
+      const data = await apiFetch<{ bots: Bot[] }>('/bots/')
       setBots(data.bots)
     } finally {
     }

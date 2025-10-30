@@ -1,11 +1,5 @@
 - hosts: all
   become: yes
-  vars:
-    env_file: "{{ app_root }}/.env"
-    prod_env_file: "{{ app_root }}/.production.env"
-    vault_pass_file: /etc/secret/.ansible_vault_pass.txt
-    uv_local_bin: /root/.local/bin/uv
-    uv_global_bin: /usr/local/bin/uv
 
   vars_files:
     - ../.production.secrets.yml
@@ -16,7 +10,7 @@
         path: /etc/secret
         state: directory
         owner: root
-        group: codeborn
+        group: "{{ group }}"
         mode: "0750"
 
     - name: Write app vault password file
@@ -24,16 +18,10 @@
         content: "{{ ansible.vault_pass }}"
         dest: "{{ vault_pass_file }}"
         owner: root
-        group: codeborn
+        group: "{{ group }}"
         mode: "0640"
 
-    - name: Write .env (set app mode to production)
-      copy:
-        content: "CODEBORN_APP_MODE=production\n"
-        dest: "{{ env_file }}"
-        owner: codeborn
-        group: codeborn
-        mode: "0644"
+    - import_tasks: tasks/ensure_env.yml
 
     - name: Install uv and uvx globally
       ansible.builtin.shell: |
@@ -59,7 +47,4 @@
         chdir: "{{ app_root }}"
         creates: "{{ venv_path }}/bin/python"
 
-    - name: Sync dependencies from uv.lock
-      ansible.builtin.command: "{{ uv_global_bin }} sync"
-      args:
-        chdir: "{{ app_root }}"
+    - import_tasks: tasks/sync_python_deps.yml

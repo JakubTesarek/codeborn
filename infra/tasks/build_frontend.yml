@@ -1,0 +1,7 @@
+- name: Build frontend (npm ci && npm run build)
+  become_user: "{{ username }}"
+  shell: |
+    npm ci
+    npm run build
+  args:
+    chdir: "{{ frontend_root }}"

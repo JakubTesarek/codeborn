@@ -15,7 +15,7 @@ export function BotCard({ bot, refresh }: { bot: Bot; refresh: () => void }) {
 
   const fetchMessages = useCallback(async () => {
     const data = await apiFetch<{ messages: Message[] }>(
-      `/api/bots/${bot.gid}/messages?limit=200&offset=0`
+      `/bots/${bot.gid}/messages?limit=200&offset=0`
     )
     setMessages(data.messages)
   }, [bot.gid])
@@ -23,7 +23,7 @@ export function BotCard({ bot, refresh }: { bot: Bot; refresh: () => void }) {
   const handleAction = async (action: 'restart' | 'enable' | 'disable') => {
     setLoading(true)
     try {
-      await apiFetch(`/api/bots/${bot.gid}/${action}`, { method: 'POST' })
+      await apiFetch(`/bots/${bot.gid}/${action}`, { method: 'POST' })
       refresh()
     } finally {
       setLoading(false)
