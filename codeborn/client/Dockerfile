@@ -8,6 +8,6 @@ ENV PYTHONPATH="/usr/local/lib/python3.13/site-packages:${PYTHONPATH}"
 WORKDIR /app
 
 COPY pyproject.toml ./
-COPY codeborn_client ./codeborn_client
+COPY codeborn/client ./codeborn/client
 
 RUN pip install --no-cache-dir .[user]

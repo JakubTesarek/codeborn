@@ -1,0 +1,13 @@
+- name: Build Codeborn client Docker image
+  community.docker.docker_image:
+    name: codeborn-client
+    build:
+      path: "{{ app_root }}/codeborn/client"
+      dockerfile: Dockerfile
+    state: present
+    source: build
+  register: docker_build_result
+
+- name: Show Docker build result
+  debug:
+    var: docker_build_result.image.id

@@ -6,3 +6,4 @@
     - import_tasks: tasks/sync_python_deps.yml
     - import_tasks: tasks/build_frontend.yml
     - import_tasks: tasks/restart_api.yml
+    - import_tasks: tasks/build_client_docker_image.yml
