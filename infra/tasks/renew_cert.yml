@@ -1,0 +1,8 @@
+- name: Ensure daily certbot renewal cron exists
+  cron:
+    name: "Certbot renew and reload Nginx"
+    user: root
+    minute: "0"
+    hour: "3"
+    job: "certbot renew --quiet --deploy-hook 'systemctl reload nginx'"
+    state: present
