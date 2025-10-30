@@ -48,3 +48,11 @@
         creates: "{{ venv_path }}/bin/python"
 
     - import_tasks: tasks/sync_python_deps.yml
+    
+    - name: Ensure agents data directory exists
+      file:
+        path: "{{ agents.base_dir }}"
+        state: directory
+        owner: "{{ username }}"
+        group: "{{ group }}"
+        mode: "0750"

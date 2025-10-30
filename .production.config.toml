@@ -18,7 +18,6 @@ ttl = 86400 # 24 * 60 * 60
 
 [agents]
 runtime_class_name = "codeborn/engine.agents.container.PodmanAgent"
-base_dir = "/apps/qminersfs1/jtesarek/user_bots"
 container_image = "localhost/codeborn-client:latest"
 version_file = "codeborn.ini"
 
