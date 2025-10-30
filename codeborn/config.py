@@ -265,6 +265,7 @@ class AuthConfig(BaseModel):
     """Authentication configuration."""
 
     cookie_domain: str
+    secure_cookie: bool
     jwt: JwtConfig
 
 
@@ -274,7 +275,6 @@ class ApiConfig(BaseModel):
     host: str
     port: int
     frontend_url: str
-    domain: str
     app_name: str
     auto_reload: bool = False
     session_key: str

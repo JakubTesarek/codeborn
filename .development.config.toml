@@ -10,6 +10,7 @@ auto_reload = true
 
 [auth]
 cookie_domain = 'localhost'
+secure_cookie = false
 
 [auth.jwt]
 algorithm = 'HS256'

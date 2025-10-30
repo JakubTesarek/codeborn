@@ -64,7 +64,7 @@ async def github_callback(
         path='/',
         value=create_token(str(user.gid), config.auth.jwt),
         httponly=True,
-        secure=False,
+        secure=config.auth.secure_cookie,
         samesite='lax',
         max_age=config.auth.jwt.ttl
     )
@@ -78,13 +78,14 @@ async def me(user: User = Depends(get_current_user)) -> dict:
 
 
 @router.post('/logout')
-async def logout() -> Response:
+async def logout(config: CodebornConfig = Depends(get_config)) -> Response:
     """Logout the current user by deleting the auth cookie."""
     resp = Response(status_code=204)
     resp.delete_cookie(
         key='auth_token',
+        domain=config.auth.cookie_domain,
         path='/',
         samesite='lax',
-        secure=False,
+        secure=config.auth.secure_cookie,
     )
     return resp
