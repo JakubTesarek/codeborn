@@ -1,0 +1,12 @@
+- name: Enable site
+  file:
+    src: "/etc/nginx/sites-available/{{ domain }}"
+    dest: "/etc/nginx/sites-enabled/{{ domain }}"
+    state: link
+  notify: Reload Nginx
+
+handlers:
+  - name: Reload Nginx
+    service:
+      name: nginx
+      state: reloaded

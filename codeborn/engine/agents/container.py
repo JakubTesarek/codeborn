@@ -13,8 +13,8 @@ if TYPE_CHECKING:
     from codeborn.engine.agents import BotAgent
 
 
-class PodmanAgent(AsyncProcessAgent):
-    """Podman/Docker container agent using subprocess I/O."""
+class DockerAgent(AsyncProcessAgent):
+    """Docker container agent using subprocess I/O."""
 
     def __init__(self, bot: Bot, config: AgentsConfig) -> None:
         super().__init__(bot, config)
@@ -33,7 +33,11 @@ class PodmanAgent(AsyncProcessAgent):
         engine_name = entry_point.name
 
         self._process = await asyncio.create_subprocess_exec(
-            'podman', 'run', '--rm', '-i',
+            'docker', 'run', '--rm', '-i',
+            '--network', 'none',
+            '--cpus', '0.5',
+            '--memory', '250m',
+            '--cap-drop', 'ALL',
             '-e', 'PYTHONUNBUFFERED=0',
             '-v', f'{self.bot.entry_point_path}:/{engine_name}:ro,Z',
             '-e', 'PYTHONPATH=/',

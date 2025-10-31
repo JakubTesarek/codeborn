@@ -1,0 +1,17 @@
+- name: Install uv and uvx globally
+  ansible.builtin.shell: |
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+  args:
+    creates: "{{ uv_local_bin }}"
+
+- name: Symlink uv to global bin for global access
+  ansible.builtin.file:
+    src: "{{ uv_local_bin }}"
+    dest: "{{ uv_global_bin }}"
+    state: link
+    force: yes
+
+- name: Ensure uv binary is executable
+  ansible.builtin.file:
+    path: "{{ uv_global_bin }}"
+    mode: '0755'

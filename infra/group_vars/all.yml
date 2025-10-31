@@ -22,3 +22,6 @@ frontend_dist: "{{ frontend_root }}/dist"
 
 domain_frontend: codeborn.app
 domain_api: api.codeborn.app
+
+docker_name: codeborn-client
+docker_file: Dockerfile.client

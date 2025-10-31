@@ -1,36 +1,3 @@
-# Development
-
-## Setup dev environment
-```
-uv env
-uv sync
-```
-
-## Install npm dependencies
-`npm --prefix frontend install`
-
-## Edit vault file
-`ansible-vault edit --vault-password-file ~/.ansible_vault_pass.txt .<app_mode>.secrets.yml`
-
-## Build client docker image
-`podman build -t localhost/codeborn-client:latest codeborn_client/`
-
-## Generate migrations
-```
-aerich migrate --name <description>
-aerich upgrade
-```
-
-## Run DB
-`docker compose up`
-
-## Run Api
-`python -m codeborn.api`
-
-## Run Frontend
-`npm --prefix frontend run dev`
-
-
 # Production
 
 ## Setup server

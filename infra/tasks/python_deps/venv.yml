@@ -1,0 +1,5 @@
+- name: Create virtual environment using uv
+  ansible.builtin.command: "{{ uv_global_bin }} venv --python {{ python_bin }}"
+  args:
+    chdir: "{{ app_root }}"
+    creates: "{{ venv_path }}/bin/python"

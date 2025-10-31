@@ -1,4 +1,4 @@
-- name: Update Codeborn repository
+- name: Update repository
   become_user: "{{ username }}"
   git:
     repo: "{{ repo_url }}"

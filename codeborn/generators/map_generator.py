@@ -8,6 +8,7 @@ from codeborn.config import CodebornConfig, get_config
 
 async def main(config: CodebornConfig) -> None:
     await init_db(config.database)
+
     map_config = config.generators.map
     logger = get_logger(component='map_generator')
 

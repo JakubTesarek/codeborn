@@ -40,9 +40,11 @@
         enabled: true
         state: started
 
-    - import_tasks: tasks/issue_cert.yml
+    - import_tasks: tasks/cert/issue.yml
       vars:
         domain: "{{ domain_api }}"
+    
+    - import_tasks: tasks/cert/cron_renew.yml
 
     - name: Install API Nginx config
       template:
@@ -53,12 +55,9 @@
         proxy_pass: "http://127.0.0.1:8000"
       notify: Reload Nginx
 
-    - name: Enable Nginx site
-      file:
-        src: "/etc/nginx/sites-available/{{ domain_api }}"
-        dest: "/etc/nginx/sites-enabled/{{ domain_api }}"
-        state: link
-      notify: Reload Nginx
+    - import_tasks: tasks/nginx/enable_site.yml
+      vars:
+        domain: "{{ domain_frontend }}"
 
   handlers:
     - name: Reload systemd

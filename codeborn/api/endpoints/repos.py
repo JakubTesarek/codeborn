@@ -47,6 +47,7 @@ async def clone_or_pull(repo_gid: UUID, user: User = Depends(get_current_user)) 
     """Clone or pull a GitHub repository by its GID."""
     github_account = await GitHubAccount.get(user=user)
     repo = await GithubRepo.get(gid=repo_gid, github_account=github_account)
+
     if repo.is_cloned:
         await pull_repo(repo)
     else:

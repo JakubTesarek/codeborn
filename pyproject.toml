@@ -13,10 +13,24 @@ members = [
 [tool.hatch.build.targets.wheel]
 packages = ["codeborn"]
 
+[tool.hatch.envs.default.scripts]
+build-client = "docker build -t localhost/codeborn-client:latest -f Dockerfile.client ."
+frontend-deps = "npm --prefix frontend install"
+migrate = """
+  read -p 'Migration description: ' desc
+  aerich migrate --name "$desc"
+  aerich upgrade
+"""
+
+infra = "docker compose up"
+api = "python -m codeborn.api"
+frontend = "npm --prefix frontend run dev"
+engine = "python -m codeborn.engine"
+
 [project]
 name = "codeborn"
 version = "0.1.0"
-description = "Codeborn umbrella package"
+description = "Codeborn package"
 requires-python = ">=3.13"
 dependencies = [
   "fastapi>=0.118.0",
@@ -44,7 +58,8 @@ dependencies = [
   "httpx>=0.28.1",
 ]
 
-[project.optional-dependencies]
+
+[dependency-groups]
 dev = [
     "ruff>=0.14.2",
     "pytest>=8.4.2",
@@ -53,7 +68,7 @@ dev = [
 ]
 
 [tool.aerich]
-tortoise_orm = "codeborn.engine.database.AERICH_CONFIG"
+tortoise_orm = "codeborn.database.AERICH_CONFIG"
 location = "./migrations"
 src_folder = "./."
 
@@ -67,4 +82,4 @@ select = ["E", "F", "W", "C", "B"]
 preview = true
 ignore = [
   "B008"  # Function call in fnc args (fastapi's Depends)
-] 
+]

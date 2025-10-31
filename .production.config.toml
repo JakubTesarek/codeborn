@@ -17,7 +17,7 @@ algorithm = 'HS256'
 ttl = 86400 # 24 * 60 * 60
 
 [agents]
-runtime_class_name = "codeborn/engine.agents.container.PodmanAgent"
+runtime_class_name = "codeborn/engine.agents.container.DockerAgent"
 container_image = "localhost/codeborn-client:latest"
 version_file = "codeborn.ini"
 

@@ -1,3 +1,6 @@
+# Bootstrap server with initial configuration
+# Run as a root!
+
 - hosts: all
   become: yes
 

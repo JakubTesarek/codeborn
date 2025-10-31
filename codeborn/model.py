@@ -254,7 +254,7 @@ class GithubRepo(CodebornModel):
     def local_clone_path(self) -> Path:
         """Get the local clone path for this repository."""
         from codeborn.config import get_config
-        return Path(f'{get_config().agents.base_dir}/{self.full_name}')
+        return Path(f'{get_config().agents.base_dir}/{self.full_name}').expanduser()
 
     @property
     def is_cloned(self) -> bool:
@@ -337,7 +337,7 @@ class Bot(CodebornModel):
     def entry_point_path(self) -> Path:
         """Get the local entry point path for this bot."""
         from codeborn.config import get_config
-        return Path(f'{get_config().agents.base_dir}/{self.entry_point}')
+        return Path(f'{get_config().agents.base_dir}/{self.entry_point}').expanduser()
 
     @property
     def state(self) -> BotState:

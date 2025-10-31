@@ -3,10 +3,11 @@
 
   tasks:
     - import_tasks: tasks/build_frontend.yml
-
-    - import_tasks: tasks/issue_cert.yml
+    - import_tasks: tasks/cert/issue.yml
       vars:
         domain: "{{ domain_frontend }}"
+    
+    - import_tasks: tasks/cert/cron_renew.yml
 
     - name: Install frontend Nginx config
       template:
@@ -18,12 +19,9 @@
         extra_domains: "www.{{ domain_frontend }}"
       notify: Reload Nginx
 
-    - name: Enable site
-      file:
-        src: "/etc/nginx/sites-available/{{ domain_frontend }}"
-        dest: "/etc/nginx/sites-enabled/{{ domain_frontend }}"
-        state: link
-      notify: Reload Nginx
+    - import_tasks: tasks/nginx/enable_site.yml
+      vars:
+        domain: "{{ domain_frontend }}"
 
   handlers:
     - name: Reload Nginx

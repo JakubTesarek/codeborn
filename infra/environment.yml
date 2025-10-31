@@ -27,9 +27,6 @@
           - "{{ python_bin }}-venv"
         state: present
     
-    - name: Start Docker
-      service:
-        name: docker
-        state: started
-        enabled: true
+    - import_tasks: tasks/docker/enable.yml
+
       

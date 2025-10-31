@@ -1,9 +1,9 @@
 - hosts: all
   become: yes
   tasks:
-    - import_tasks: tasks/pull_repo.yml
-    - import_tasks: tasks/ensure_env.yml
-    - import_tasks: tasks/sync_python_deps.yml
+    - import_tasks: tasks/git/pull_repo.yml
+    - import_tasks: tasks/ensure_dot_env.yml
+    - import_tasks: tasks/python_deps/install.yml
     - import_tasks: tasks/build_frontend.yml
     - import_tasks: tasks/restart_api.yml
-    - import_tasks: tasks/build_client_docker_image.yml
+    - import_tasks: tasks/docker/build_image.yml
