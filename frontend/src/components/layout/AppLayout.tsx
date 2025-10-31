@@ -33,7 +33,7 @@ export function AppLayout() {
           navigate('/')
         }} />
         <main className="flex-1 p-6">
-          <Outlet />
+          <Outlet context={{ user, setUser }} />
         </main>
       </div>
       <Toaster richColors position="bottom-right" />

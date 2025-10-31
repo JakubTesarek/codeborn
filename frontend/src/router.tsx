@@ -8,6 +8,7 @@ import { EconomyPage } from '@/pages/EconomyPage'
 import { ReposPage } from '@/pages/ReposPage'
 import { LegalPage } from '@/pages/LegalPage'
 import { ErrorPage } from '@/pages/ErrorPage'
+import { SettingsPage } from '@/pages/SettingsPage/SettingsPage'
 
 
 export const router = createBrowserRouter([
@@ -22,6 +23,7 @@ export const router = createBrowserRouter([
       { path: '/economy', element: <EconomyPage /> },
       { path: '/bots', element: <BotsPage /> },
       { path: '/repos', element: <ReposPage /> },
+      { path: '/settings', element: <SettingsPage /> },
     ],
   },
   { path: '/legal', element: <LegalPage /> },

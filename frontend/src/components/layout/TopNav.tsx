@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import { FolderGit2, Menu, User as UserIcon, Settings, Star } from 'lucide-react'
+import { FolderGit2, Menu, Settings } from 'lucide-react'
 import { LogoutButton } from '@/components/layout/LogoutButton'
 import { NavLink } from '@/components/layout/NavLink'
 import { Link } from 'react-router-dom'
@@ -79,25 +79,17 @@ export function TopNav({ user, onLogout }: TopNavProps) {
           <DropdownMenuSeparator />
 
           <DropdownMenuItem className="cursor-pointer">
+            <Link to="/settings" className="flex items-center">
+              <Settings className="mr-2 h-4 w-4" />
+              Settings
+            </Link>
+          </DropdownMenuItem>
+
+          <DropdownMenuItem className="cursor-pointer">
              <Link to="/repos" className="flex items-center">
               <FolderGit2 className="mr-2 h-4 w-4" />
                 Repositories
               </Link>
-          </DropdownMenuItem>
-          
-          <DropdownMenuItem className="cursor-pointer">
-            <UserIcon className="mr-2 h-4 w-4" />
-            View Profile
-          </DropdownMenuItem>
-
-          <DropdownMenuItem className="cursor-pointer">
-            <Settings className="mr-2 h-4 w-4" />
-            Settings
-          </DropdownMenuItem>
-
-          <DropdownMenuItem className="cursor-pointer">
-            <Star className="mr-2 h-4 w-4" />
-            Buy Premium
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />

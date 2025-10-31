@@ -1,7 +1,10 @@
-from fastapi import APIRouter, Request, Depends, Response
+from pathlib import Path
+import shutil
+from fastapi import APIRouter, Request, Depends, Response, HTTPException
 from fastapi.responses import RedirectResponse
 from authlib.integrations.starlette_client import OAuth
 from tortoise.exceptions import DoesNotExist
+from pydantic import BaseModel
 
 from codeborn.config import CodebornConfig
 from codeborn.model import User, GitHubAccount
@@ -11,6 +14,25 @@ from codeborn.api.deps import get_config, get_oauth
 
 
 router = APIRouter()
+
+
+class AccountDeleteRequest(BaseModel):
+    """Request model for removing account."""
+
+    username: str
+
+
+async def get_logout_response(config: CodebornConfig) -> Response:
+    """Get a response removing auth cookie"""
+    response = Response(status_code=204)
+    response.delete_cookie(
+        key='auth_token',
+        domain=config.auth.cookie_domain,
+        path='/',
+        samesite='lax',
+        secure=config.auth.secure_cookie,
+    )
+    return response
 
 
 @router.get('/github/login')
@@ -72,20 +94,31 @@ async def github_callback(
 
 
 @router.get('/me')
-async def me(user: User = Depends(get_current_user)) -> dict:
+async def get_account(user: User = Depends(get_current_user)) -> dict:
     """Get the current authenticated user's information."""
     return await user.dump(exclude={'bots', 'github__repos'})
+
+
+@router.delete('/me')
+async def delete_account(
+    request: AccountDeleteRequest,
+    user: User = Depends(get_current_user),
+    config: CodebornConfig = Depends(get_config)
+) -> Response:
+    """Remove the current authenticated user."""
+    github_login = (await user.github).login  # type: ignore
+
+    if request.username == github_login:
+        user_dir = Path(config.agents.base_dir).expanduser() / github_login
+        if user_dir.exists():
+            shutil.rmtree(user_dir)
+        await user.delete()
+        return await get_logout_response(config)
+
+    raise HTTPException(status_code=400, detail="Username doesn't match.")
 
 
 @router.post('/logout')
 async def logout(config: CodebornConfig = Depends(get_config)) -> Response:
     """Logout the current user by deleting the auth cookie."""
-    resp = Response(status_code=204)
-    resp.delete_cookie(
-        key='auth_token',
-        domain=config.auth.cookie_domain,
-        path='/',
-        samesite='lax',
-        secure=config.auth.secure_cookie,
-    )
-    return resp
+    return await get_logout_response(config)

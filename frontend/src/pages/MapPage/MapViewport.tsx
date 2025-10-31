@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect } from 'react'
 import { Tile, Terrain, TILE_SIZE, GRID_SIZE, VIEW_SIZE } from './types'
 
+
 interface MapViewportProps {
   tiles: Tile[]
   onSelect: (tile: Tile | null) => void

@@ -50,3 +50,8 @@ type EligibilityResponse = {
   max_bots: number
   repos: Repo[]
 }
+
+type LayoutContext = {
+  user: User
+  setUser: (u: User | null) => void
+}
