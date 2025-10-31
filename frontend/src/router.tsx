@@ -6,13 +6,15 @@ import { BotsPage } from '@/pages/BotsPage/BotsPage'
 import { ArmyPage } from '@/pages/ArmyPage'
 import { EconomyPage } from '@/pages/EconomyPage'
 import { ReposPage } from '@/pages/ReposPage'
-import { LegalPage } from './pages/LegalPage'
+import { LegalPage } from '@/pages/LegalPage'
+import { ErrorPage } from '@/pages/ErrorPage'
 
 
 export const router = createBrowserRouter([
   {
     path: '/',
     element: <AppLayout />,
+    errorElement: <ErrorPage />,
     children: [
       { path: '/', element: <DashboardPage /> },
       { path: '/map', element: <MapPage /> },
