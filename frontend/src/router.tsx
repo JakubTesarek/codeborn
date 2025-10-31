@@ -24,7 +24,7 @@ export const router = createBrowserRouter([
       { path: '/repos', element: <ReposPage /> },
     ],
   },
-  { path: '/legal', element: <LegalPage /> }, // standalone page, no AppLayout
+  { path: '/legal', element: <LegalPage /> },
 ])
 
 export function AppRouter() {
