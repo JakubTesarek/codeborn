@@ -7,7 +7,3 @@
     state: present
     source: build
   register: docker_build_result
-
-- name: Show Docker build result
-  debug:
-    var: docker_build_result.image.id

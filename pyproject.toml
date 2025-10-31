@@ -22,6 +22,8 @@ migrate = """
   aerich upgrade
 """
 
+deploy = "ansible-playbook -i infra/inventory.ini infra/deploy.yml"
+
 infra = "docker compose up"
 api = "python -m codeborn.api"
 frontend = "npm --prefix frontend run dev"
