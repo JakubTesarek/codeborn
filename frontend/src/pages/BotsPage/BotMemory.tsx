@@ -16,7 +16,7 @@ export function BotMemory({ bot }: { bot: Bot }) {
 
   useEffect(() => {
     fetchMemory()
-    const interval = setInterval(fetchMemory, 60000) // 1 minute
+    const interval = setInterval(fetchMemory, 60000)
     return () => clearInterval(interval)
   }, [fetchMemory])
 

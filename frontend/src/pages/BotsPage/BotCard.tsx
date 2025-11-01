@@ -2,15 +2,14 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { formatDatetime, formatDuration } from '@/lib/utils'
+import { apiFetch } from '@/api/client'
 import { BotLog } from './BotLog'
 import { BotMemory } from './BotMemory'
-import { apiFetch } from '@/api/client'
 
 export function BotCard({ bot, refresh }: { bot: Bot; refresh: () => void }) {
   const [loading, setLoading] = useState(false)
-  const [showLogs, setShowLogs] = useState(false)
-  const [showMemory, setShowMemory] = useState(false)
 
   const handleAction = async (action: 'restart' | 'enable' | 'disable') => {
     setLoading(true)
@@ -19,22 +18,6 @@ export function BotCard({ bot, refresh }: { bot: Bot; refresh: () => void }) {
       refresh()
     } finally {
       setLoading(false)
-    }
-  }
-
-  const toggleLogs = () => {
-    if (showLogs) setShowLogs(false)
-    else {
-      setShowMemory(false)
-      setShowLogs(true)
-    }
-  }
-
-  const toggleMemory = () => {
-    if (showMemory) setShowMemory(false)
-    else {
-      setShowLogs(false)
-      setShowMemory(true)
     }
   }
 
@@ -47,9 +30,9 @@ export function BotCard({ bot, refresh }: { bot: Bot; refresh: () => void }) {
   }[bot.state]
 
   return (
-    <Card className="border shadow-sm">
+    <Card className="border shadow-sm hover:shadow-md transition-shadow duration-200">
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>{bot.name}</CardTitle>
+        <CardTitle className="text-lg font-semibold">{bot.name}</CardTitle>
         <Badge
           className={`${stateColor} text-white capitalize pointer-events-none hover:bg-current focus-visible:ring-0`}
         >
@@ -59,8 +42,8 @@ export function BotCard({ bot, refresh }: { bot: Bot; refresh: () => void }) {
 
       <CardContent className="text-sm space-y-1">
         <div className="grid grid-cols-[10ch_1fr] items-start">
-          <span className="text-muted-foreground font-medium">Entry point:</span>
-          <span>{bot.entry_point}</span>
+          <span className="text-muted-foreground font-medium">Repository:</span>
+          <span className="font-mono">{bot.entry_point}</span>
         </div>
 
         <div className="grid grid-cols-[10ch_1fr] items-start">
@@ -82,39 +65,47 @@ export function BotCard({ bot, refresh }: { bot: Bot; refresh: () => void }) {
         </div>
       </CardContent>
 
-      <CardFooter className="flex gap-2">
-        <Button size="sm" onClick={() => handleAction('restart')} disabled={loading}>
-          Restart
-        </Button>
-        {bot.enabled ? (
-          <Button
-            size="sm"
-            variant="secondary"
-            onClick={() => handleAction('disable')}
-            disabled={loading}
-          >
-            Disable
+      <CardFooter className="flex flex-wrap justify-between items-center gap-2 border-t pt-3">
+        <div className="flex gap-2">
+          <Button size="sm" onClick={() => handleAction('restart')} disabled={loading}>
+            Restart
           </Button>
-        ) : (
-          <Button
-            size="sm"
-            variant="secondary"
-            onClick={() => handleAction('enable')}
-            disabled={loading}
-          >
-            Enable
-          </Button>
-        )}
-        <Button size="sm" variant="secondary" onClick={toggleLogs}>
-          {showLogs ? 'Hide log' : 'Show log'}
-        </Button>
-        <Button size="sm" variant="secondary" onClick={toggleMemory}>
-          {showMemory ? 'Hide memory' : 'Show memory'}
-        </Button>
-      </CardFooter>
+          {bot.enabled ? (
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() => handleAction('disable')}
+              disabled={loading}
+            >
+              Disable
+            </Button>
+          ) : (
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() => handleAction('enable')}
+              disabled={loading}
+            >
+              Enable
+            </Button>
+          )}
+        </div>
 
-      {showLogs && <BotLog bot={bot} />}
-      {showMemory && <BotMemory bot={bot} />}
+        <Tabs defaultValue="logs" className="w-full">
+          <TabsList className="w-full grid grid-cols-2 mt-3">
+            <TabsTrigger value="log">Log</TabsTrigger>
+            <TabsTrigger value="memory">Memory</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="log">
+            <BotLog bot={bot} />
+          </TabsContent>
+
+          <TabsContent value="memory">
+            <BotMemory bot={bot} />
+          </TabsContent>
+        </Tabs>
+      </CardFooter>
     </Card>
   )
 }
