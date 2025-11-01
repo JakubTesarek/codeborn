@@ -4,7 +4,7 @@ from codeborn.client.messages import MessageType
 from codeborn.database import db
 from codeborn.config import CodebornConfig, get_config
 from codeborn.logger import get_logger, init_logging
-from codeborn.model import Message
+from codeborn.model import BotMemory, Message
 from codeborn.engine import lifecycle
 from codeborn.engine.agents.registry import AgentRegistry
 from codeborn.engine.agents import BotAgent
@@ -24,6 +24,13 @@ class MessageDispatcher:
         agent.bot.last_heartbeat = message.datetime
         await agent.bot.save(update_fields=['last_heartbeat'])
 
+    async def _save_memory(self, agent: BotAgent, message: Message) -> None:
+        """Save memory upload to the database."""
+        await BotMemory.filter(bot=agent.bot).update(
+            data=message.payload['data'],
+            updated_at=message.datetime
+        )
+
     async def on_message(self, agent: BotAgent, message: Message) -> None:
         """Handle messages received from bots."""
         await message.save()
@@ -33,13 +40,16 @@ class MessageDispatcher:
                 await self._log_heartbeat(agent, message)
             case MessageType.bot_log:
                 self._logger.debug('Received log', raw=message, payload=message.payload['text'])
+            case MessageType.memory_upload:
+                self._logger.debug('Received memory dump', raw=message)
+                await self._save_memory(agent, message)
             case MessageType.command:
                 self._logger.debug('Received command', bot_gid=agent.bot.gid, payload=message.payload)
                 matched = await self._router.match(agent, message)
                 if not matched:
                     self._logger.warning('No command handler matched.', bot_gid=agent.bot.gid, payload=message.payload)
             case _:
-                self._logger.debug('Received unknown message type.', bot_gid=agent.bot.gid, message_type=message.type)
+                self._logger.warning('Received unknown message type.', bot_gid=agent.bot.gid, message_type=message.type)
 
 
 async def main(config: CodebornConfig) -> None:

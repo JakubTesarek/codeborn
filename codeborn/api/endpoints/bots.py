@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from tortoise.exceptions import DoesNotExist
 
-from codeborn.model import Bot, GitHubAccount, GithubRepo, User, Message
+from codeborn.model import Bot, BotMemory, GitHubAccount, GithubRepo, User, Message
 from codeborn.api.auth import get_current_user
 
 
@@ -40,6 +40,10 @@ async def create(request: BotCreateRequest, user: User = Depends(get_current_use
         enabled=request.enabled
     )
     await bot.save()
+
+    memory = BotMemory(bot=bot)
+    await memory.save()
+
     return await bot.dump(exclude={'armies'})
 
 
@@ -99,6 +103,16 @@ async def get_messages(
         )
         messages = [await msg.dump() for msg in await messages_query]
         return {'messages': messages, 'total': total}
+    else:
+        raise HTTPException(status_code=404, detail='Bot not found')
+
+
+
+@router.get('/{bot_gid}/memory')
+async def get_memory(bot_gid: UUID, user: User = Depends(get_current_user)) -> dict:
+    """Return recent messages for a bot, newest first."""
+    if memory := await BotMemory.filter(bot__gid=bot_gid, bot__user=user).first():
+        return await memory.dump()
     else:
         raise HTTPException(status_code=404, detail='Bot not found')
 

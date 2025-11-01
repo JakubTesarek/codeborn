@@ -107,7 +107,7 @@ export function CreateBotForm({ botsCount, onBotCreated }: CreateBotFormProps) {
           Choose a local <Link
               to="/repos"
               className="inline-flex items-center text-primary hover:underline"
-            >repositories</Link> to create a new bot instance.
+            >repository</Link> to create a new bot instance.
         </CardDescription>
       </CardHeader>
 

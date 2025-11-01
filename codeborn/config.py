@@ -148,12 +148,20 @@ class StateUpdateConfig(BaseModel):
     interval: float
 
 
+class MemoryUpdateConfig(BaseModel):
+    """Agents memory update policy configuration."""
+
+    interval: float
+    max_size: int
+
+
 class LifecycleConfig(BaseModel):
     """Game engine lifecycle configuration."""
 
     restart: AgentsRestartConfig
     heartbeat: AgentsHeartbeatConfig
     state_update: StateUpdateConfig
+    memory_update: MemoryUpdateConfig
 
 
 class AgentsConfig(BaseModel):

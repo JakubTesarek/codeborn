@@ -315,6 +315,7 @@ class Bot(CodebornModel):
     start_at = fields.DatetimeField(null=True)
     enabled = fields.BooleanField(default=True)
 
+    memory: fields.ReverseRelation['BotMemory']
     armies: fields.ReverseRelation['Army']
     messages: fields.ReverseRelation['Message']
 
@@ -377,6 +378,34 @@ class Bot(CodebornModel):
             'uptime_sec': lambda e: dump_td(self.uptime),
         }
 
+        return await self._dump(fields, exclude=exclude)
+
+
+class BotMemory(CodebornModel):
+    """Memory record of a bot."""
+
+    gid = fields.UUIDField(pk=True, default=uuid4)
+    bot = fields.OneToOneField('models.Bot', related_name='memory', on_delete=fields.CASCADE)
+    data = fields.JSONField(default=dict)
+    updated_at = fields.DatetimeField(auto_now=True)
+
+    def clean(self):
+        """Clean and validate data before storing them to DB."""
+        if self.data is not None:
+            from codeborn.config import get_config
+            max_size = get_config().lifecycle.memory_update.max_size
+            raw = json.dumps(self.data).encode()
+            if len(raw) > max_size:
+                raise ValueError(f'Memory exceeds {max_size} bytes.')
+
+    async def dump(self, exclude: list[str] | set[str] | None = None) -> dict[str, Any]:
+        """"Dump the memory as a dictionary."""
+        fields = {
+            'gid': lambda e: str(self.gid),
+            'bot_gid': lambda e: str(self.bot_id),  # type: ignore
+            'data': lambda e: self.data,  # type: ignore
+            'updated_at': lambda e: dump_dt(self.updated_at),
+        }
         return await self._dump(fields, exclude=exclude)
 
 

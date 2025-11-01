@@ -34,6 +34,10 @@ interval = 10.0
 [lifecycle.state_update]
 interval = 15.0
 
+[lifecycle.memory_update]
+interval = 60.0
+max_size = 61_562_880  # 5 * 1024 * 1024 = 5MB
+
 [database]
 init_schema = true
 pool_min_size = 2

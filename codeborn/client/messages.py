@@ -12,10 +12,21 @@ import msgspec
 class MessageType(StrEnum):
     """Types of messages exchanged between the Codeborn engine and agents."""
 
+    # Heartbeat
     heartbeat_response = 'heartbeat_response'
     heartbeat_request = 'heartbeat_request'
+
+    # Logging
     bot_log = 'bot_log'
+
+    # Game state
     state_sync = 'state_sync'
+
+    # Memory
+    memory_download = 'memory_download'
+    memory_upload = 'memory_upload'
+
+    # Commands
     command = 'command'
     command_result = 'command_result'
 

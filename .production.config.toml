@@ -20,6 +20,7 @@ ttl = 86400 # 24 * 60 * 60
 runtime_class_name = "codeborn/engine.agents.container.DockerAgent"
 container_image = "localhost/codeborn-client:latest"
 version_file = "codeborn.ini"
+max_memory_size = 61_562_880  # 5 * 1024 * 1024 = 5MB
 
 [lifecycle]
 
@@ -32,6 +33,10 @@ interval = 30.0
 
 [lifecycle.state_update]
 interval = 25.0
+
+[lifecycle.memory_update]
+interval = 60.0
+max_size = 61_562_880  # 5 * 1024 * 1024 = 5MB
 
 [database]
 port = 5432

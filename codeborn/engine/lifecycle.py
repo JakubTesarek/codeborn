@@ -1,11 +1,11 @@
 import asyncio
 import datetime
-from typing import AsyncIterator
+from typing import AsyncIterator, cast
 
 from codeborn.client.messages import MessageType
 from codeborn.config import AgentsHeartbeatConfig, AgentsRestartConfig, StateUpdateConfig
 from codeborn.logger import get_logger
-from codeborn.model import Bot, Message
+from codeborn.model import Bot, BotMemory, Message
 from codeborn.engine.agents import BotAgent
 from codeborn.engine.agents.registry import AgentRegistry
 
@@ -40,6 +40,17 @@ async def send_state_update(agent: BotAgent) -> None:
         bot=agent.bot,
         type=MessageType.state_sync,
         payload=game_state
+    )
+    await agent.send_message(message)
+
+
+async def upload_memory(agent: BotAgent) -> None:
+    """Send message with memory dump to a given agent."""
+    memory = cast(BotMemory, await agent.bot.memory)
+    message = Message(
+        bot=agent.bot,
+        type=MessageType.memory_download,  # download from bots PoV
+        payload=await memory.dump(exclude=['gid', 'bot_gid'])
     )
     await agent.send_message(message)
 
@@ -83,14 +94,17 @@ async def restart(config: AgentsRestartConfig, registry: AgentRegistry) -> None:
     """Check agents that need to be restarted every interval."""
     logger = get_logger(component='restart')
 
-    async def restart_agent(user: Bot) -> None:
-        """Restart an agent for a given user."""
-        agent = await registry.restart_agent(user)
+    async def restart_agent(bot: Bot) -> None:
+        """Restart an agent for a given bot."""
+        agent = await registry.restart_agent(bot)
+
         await send_state_update(agent)  # Send initial state update early
-        user.restart_requested = False
-        user.start_at = datetime.datetime.now(datetime.timezone.utc)
-        user.last_heartbeat = None  # type: ignore
-        await user.save(update_fields=['restart_requested', 'start_at', 'last_heartbeat'])
+        await upload_memory(agent)  # Send memory dump early
+
+        bot.restart_requested = False
+        bot.start_at = datetime.datetime.now(datetime.timezone.utc)
+        bot.last_heartbeat = None  # type: ignore
+        await bot.save(update_fields=['restart_requested', 'start_at', 'last_heartbeat'])
 
     try:
         logger.info('Started')
@@ -103,13 +117,9 @@ async def restart(config: AgentsRestartConfig, registry: AgentRegistry) -> None:
                         await registry.remove_agent(bot.gid)
                     else:
                         logger.info('Skipping disabled agent.', bot_gid=str(bot.gid), bot_name=bot.entry_point)
-                elif bot.restart_requested:
-                    logger.info('Restart requested.', bot_gid=str(bot.gid), bot_name=bot.entry_point)
+                elif bot.restart_requested or not await registry.get_agent(bot.gid):
+                    logger.info('Starting agent.', bot_gid=str(bot.gid), bot_name=bot.entry_point)
                     await restart_agent(bot)
-                elif not await registry.get_agent(bot.gid):
-                    logger.info('Starting missing agent.', bot_gid=str(bot.gid), bot_name=bot.entry_point)
-                    await restart_agent(bot)
-
     finally:
         logger.info('Stopped.')
 
