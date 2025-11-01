@@ -12,7 +12,7 @@ from codeborn.client.io import IORedirect, auto_flush_print, log_exceptions
 from codeborn.client.messages import ApiMessage, MessageType
 
 
-MEMORY_UPLOAD_INTERVAL = 15  # seconds
+MEMORY_UPLOAD_INTERVAL = 90  # seconds
 
 
 class Bot:
