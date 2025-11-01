@@ -22,10 +22,15 @@ class DockerAgent(AsyncProcessAgent):
         self._docker_image = config.container_image
         self._logger = get_logger(
             agent_gid=self.bot.gid,
-            agent_type='podman',
+            agent_type='docker',
             docker_image=self._docker_image,
             entry_point=self.bot.entry_point
         )
+
+    @property
+    def container_name(self) -> str:
+        """Name of the container running this process."""
+        return f'agent-{self.bot.gid}'
 
     async def start(self, on_message: Callable[[BotAgent, Message], Awaitable[None]]) -> None:
         """Start the agent process and begin listening for messages."""
@@ -34,6 +39,7 @@ class DockerAgent(AsyncProcessAgent):
 
         self._process = await asyncio.create_subprocess_exec(
             'docker', 'run', '--rm', '-i',
+            '--name', self.container_name,
             '--network', 'none',
             '--cpus', '0.5',
             '--memory', '250m',
@@ -51,3 +57,7 @@ class DockerAgent(AsyncProcessAgent):
         self._stdout_task = asyncio.create_task(self._listen_stdout(on_message))
         self._stderr_task = asyncio.create_task(self._listen_stderr(on_message))
         self._logger.info('Agent started.')
+
+    async def stop(self) -> None:
+        await super().stop()
+        await asyncio.create_subprocess_exec('docker', 'rm', '-f', self.container_name)
