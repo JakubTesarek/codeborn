@@ -91,7 +91,7 @@ export function BotCard({ bot, refresh }: { bot: Bot; refresh: () => void }) {
           )}
         </div>
 
-        <Tabs defaultValue="logs" className="w-full">
+        <Tabs defaultValue="log" className="w-full">
           <TabsList className="w-full grid grid-cols-2 mt-3">
             <TabsTrigger value="log">Log</TabsTrigger>
             <TabsTrigger value="memory">Memory</TabsTrigger>
