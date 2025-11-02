@@ -5,6 +5,7 @@ import importlib
 import os
 from functools import cache
 from pathlib import Path
+import random
 from typing import Annotated, Any, Self, TYPE_CHECKING, Union
 
 import yaml
@@ -26,6 +27,7 @@ ENV_DELIMITER = '__'
 
 
 PositiveFloat = Annotated[float, Field(gt=0)]
+NonNegativeFloat = Annotated[float, Field(ge=0)]
 
 DomainName = Annotated[str, Field(pattern=r"^[a-z\d]([a-z\d-]{0,61}[a-z\d])?(?:\.[a-z\d-]{1,63})*$")]
 CookieDomain = Annotated[str, Field(pattern=r"^\.?[a-z\d]([a-z\d-]{0,61}[a-z\d])?(?:\.[a-z\d-]{1,63})*$")]
@@ -257,12 +259,29 @@ class MapGeneratorConfig(BaseModel):
 
     width: PositiveInt
     height: PositiveInt
+    chunk_size: PositiveInt
+    seed: int = random.randrange(10 ** 16)
+    elevation_scale: PositiveInt
+    elevation_contrast_enhancement: float = 1.0
+    moisture_scale: PositiveInt
+    moisture_contrast_enhancement: float = 1.0
+    octaves: PositiveInt
+    persistence: PositiveFloat
+    lacunarity: PositiveFloat
+    ranges: dict[TerrainType, dict[str, tuple[NonNegativeFloat, NonNegativeFloat]]]
+
+
+class ArmyGeneratorConfig(BaseModel):
+    """Army generator configuration."""
+
+    starting_units: dict[UnitType, PositiveInt]
 
 
 class GeneratorsConfig(BaseModel):
     """Generators configuration."""
 
     map: MapGeneratorConfig
+    army: ArmyGeneratorConfig
 
 
 class AuthConfig(BaseModel):

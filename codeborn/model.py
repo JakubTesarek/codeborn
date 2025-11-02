@@ -51,6 +51,7 @@ class TerrainType(StrEnum):
 
     plains = 'plains'
     forest = 'forest'
+    swamp = 'swamp'
 
     @cached_property
     def config(self) -> TerrainConfig:

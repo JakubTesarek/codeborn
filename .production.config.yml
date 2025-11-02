@@ -62,8 +62,40 @@ github:
 
 generators:
   map:
-    width: 100
-    height: 100
+    width: 128
+    height: 128
+    chunk_size: 16
+    elevation_scale: 300
+    elevation_contrast_enhancement: 1.5
+    moisture_scale: 300
+    moisture_contrast_enhancement: 1.0
+    octaves: 6
+    persistence: 0.5
+    lacunarity: 2.0
+    ranges:
+      plains:
+        elevation: [0.0, 1.0]
+        moisture: [0.0, 0.4]
+      forest:
+        elevation: [0.0, 1.0]
+        moisture: [0.4, 1.0]
+      swamp:
+        elevation: [0.0, 0.3]
+        moisture: [0.7, 1.0]
+
+  army:
+    starting_units:
+      light_infantry: 25
+      spearmen: 15
+      archer: 15
+
+terrain:
+  plains:
+    movement_cost: 0.25
+  forest:
+    movement_cost: 0.5
+  swamp:
+    movement_cost: 0.7
 
 terrain:
   plains:

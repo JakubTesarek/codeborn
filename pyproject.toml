@@ -58,6 +58,9 @@ dependencies = [
   "tortoise-orm>=0.25.1",
   "aerich>=0.9.2",
   "httpx>=0.28.1",
+  "numpy>=2.3.4",
+  "perlin-noise>=1.14",
+  "matplotlib>=3.10.7",
 ]
 
 

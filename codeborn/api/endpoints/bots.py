@@ -4,6 +4,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from tortoise.exceptions import DoesNotExist
 
+from codeborn.config import CodebornConfig, get_config
+from codeborn.generators.army import starting_army
+from codeborn.generators.map import random_location
 from codeborn.model import Bot, BotMemory, GitHubAccount, GithubRepo, User, Message
 from codeborn.api.auth import get_current_user
 
@@ -27,7 +30,11 @@ async def get_all(user: User = Depends(get_current_user)) -> dict:
 
 
 @router.post('/')
-async def create(request: BotCreateRequest, user: User = Depends(get_current_user)) -> dict:
+async def create(
+    request: BotCreateRequest,
+    user: User = Depends(get_current_user),
+    config: CodebornConfig = Depends(get_config)
+) -> dict:
     """Create a new bot for the current user."""
     repo = await GithubRepo.get_or_none(gid=request.repo_gid).prefetch_related('github_account')
     if not repo or repo.github_account.user_id != user.gid:
@@ -43,6 +50,9 @@ async def create(request: BotCreateRequest, user: User = Depends(get_current_use
 
     memory = BotMemory(bot=bot)
     await memory.save()
+
+    location = await random_location(config.generators.map)
+    await starting_army(bot, location, config.generators.army)
 
     return await bot.dump(exclude={'armies'})
 
