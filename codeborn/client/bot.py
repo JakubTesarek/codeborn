@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from contextlib import redirect_stdout, redirect_stderr
 from typing import Any
 
+from codeborn.client.game_api import GameApi
 from codeborn.client.io import IORedirect, auto_flush_print, log_exceptions
 from codeborn.client.messages import ApiMessage, MessageType
 
@@ -23,6 +24,8 @@ class Bot:
     """
 
     def __init__(self) -> None:
+        self.api = GameApi(self)
+
         self._loop = asyncio.new_event_loop()
         self._background_loop = threading.Thread(target=self._start_background_loop, daemon=True)
         self._background_loop_ready = threading.Event()
