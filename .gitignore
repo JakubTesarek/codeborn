@@ -1,6 +1,9 @@
+# Local files
 *.DS_Store
-*.pyc
-*.pyc.*
 .env
 .venv
-venv
+*.code-workspace
+
+# Python
+*.pyc
+*.pyc.*
