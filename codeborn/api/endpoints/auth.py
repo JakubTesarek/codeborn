@@ -42,7 +42,7 @@ async def github_login(
     config: CodebornConfig = Depends(get_config)
 ) -> RedirectResponse:
     """Redirect to GitHub for authentication."""
-    return await oauth.github.authorize_redirect(request, config.github.redirect_url)  # type: ignore
+    return await oauth.github.authorize_redirect(request, str(config.github.redirect_url))  # type: ignore
 
 
 @router.get('/github/callback')

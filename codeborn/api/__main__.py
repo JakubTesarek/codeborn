@@ -28,7 +28,7 @@ app = FastAPI(title=config.app_name, lifespan=lifespan)
 app.add_middleware(SessionMiddleware, secret_key=config.api.session_key)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[config.frontend.proxy_url],
+    allow_origins=[str(config.frontend.proxy_url)],
     allow_credentials=True,
     allow_methods=['*'],
     allow_headers=['*'],
@@ -44,7 +44,7 @@ app.include_router(bots.router, prefix='/api/bots', tags=['Bots'])
 if __name__ == '__main__':
     uvicorn.run(
         'codeborn.api.__main__:app',
-        host=config.api.host,
+        host=config.api.host,  # type: ignore
         port=config.api.port,
         reload=config.api.auto_reload
     )

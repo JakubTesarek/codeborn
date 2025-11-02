@@ -18,9 +18,9 @@ def init_oauth(config: GithubConfig) -> OAuth:
         name='github',
         client_id=config.client_id,
         client_secret=config.client_secret,
-        access_token_url=config.access_token_url,
-        authorize_url=config.authorize_url,
-        api_base_url=config.api_base_url,
+        access_token_url=str(config.access_token_url),
+        authorize_url=str(config.authorize_url),
+        api_base_url=str(config.api_base_url),
         client_kwargs={'scope': config.scope},
     )
 
