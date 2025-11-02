@@ -14,7 +14,7 @@ export function BotCard({ bot, refresh }: { bot: Bot; refresh: () => void }) {
   const handleAction = async (action: 'restart' | 'enable' | 'disable') => {
     setLoading(true)
     try {
-      await apiFetch(`/bots/${bot.gid}/${action}`, { method: 'POST' })
+      await apiFetch(`/api/bots/${bot.gid}/${action}`, { method: 'POST' })
       refresh()
     } finally {
       setLoading(false)

@@ -9,7 +9,7 @@ export function BotLog({ bot }: { bot: Bot }) {
 
   const fetchMessages = useCallback(async () => {
     const data = await apiFetch<{ messages: Message[] }>(
-      `/bots/${bot.gid}/messages?limit=200&offset=0`
+      `/api/bots/${bot.gid}/messages?limit=200&offset=0`
     )
     setMessages(data.messages)
   }, [bot.gid])

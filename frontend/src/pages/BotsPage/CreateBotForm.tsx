@@ -39,7 +39,7 @@ export function CreateBotForm({ botsCount, onBotCreated }: CreateBotFormProps) {
   const [creating, setCreating] = useState(false)
 
   const fetchEligibility = useCallback(async () => {
-    const data = await apiFetch<EligibilityResponse>('/bots/eligibility')
+    const data = await apiFetch<EligibilityResponse>('/api/bots/eligibility')
     setEligibility(data)
   }, [])
 
@@ -47,7 +47,7 @@ export function CreateBotForm({ botsCount, onBotCreated }: CreateBotFormProps) {
     if (!selectedRepo || !botName.trim()) return
     setCreating(true)
     try {
-      await apiFetch('/bots/', {
+      await apiFetch('/api/bots/', {
         method: 'POST',
         body: JSON.stringify({
           name: botName.trim(),

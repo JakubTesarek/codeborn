@@ -19,11 +19,11 @@ export function RemoveAccountForm({ user, onLogout }: RemoveAccountFormProps) {
     if (confirmName !== user.github.login) return
     setLoading(true)
     try {
-      await apiFetch('/auth/me', {
+      await apiFetch('/api/auth/me', {
         method: 'DELETE',
         body: JSON.stringify({ username:  user.github.login }),
       })
-      await apiFetch('/auth/logout', { method: 'POST' })
+      await apiFetch('/api/auth/logout', { method: 'POST' })
       onLogout()
     } finally {
       setLoading(false)

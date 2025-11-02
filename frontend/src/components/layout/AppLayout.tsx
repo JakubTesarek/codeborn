@@ -13,7 +13,7 @@ export function AppLayout() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    apiFetch<User>('/auth/me', { suppressToast: true })
+    apiFetch<User>('/api/auth/me', { suppressToast: true })
       .then(setUser)
       .catch(() => setUser(null))
       .finally(() => setLoading(false))

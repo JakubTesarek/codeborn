@@ -1,6 +1,5 @@
 from contextlib import asynccontextmanager
 
-from fastapi.responses import RedirectResponse
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,7 +8,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from codeborn.config import get_config
 from codeborn.database import db
 from codeborn.api.auth import init_oauth
-from codeborn.api.endpoints import auth, repos, bots
+from codeborn.api.endpoints import home, healthcheck, auth, repos, bots
 
 
 config = get_config()
@@ -35,21 +34,11 @@ app.add_middleware(
     allow_headers=['*'],
 )
 
-app.include_router(auth.router, prefix='/auth')
-app.include_router(repos.router, prefix='/repos')
-app.include_router(bots.router, prefix='/bots')
-
-
-@app.get('/')
-async def root() -> RedirectResponse:
-    """Redirect user to docs."""
-    return RedirectResponse(url=app.docs_url)  # type: ignore
-
-
-@app.get('/healthcheck')
-async def healthcheck() -> dict[str, str]:
-    """Healthcheck endpoint."""
-    return {'status': 'ok'}
+app.include_router(home.router)
+app.include_router(healthcheck.router, prefix='/api', tags=['Healthcheck'])
+app.include_router(auth.router, prefix='/api/auth', tags=['Authentication'])
+app.include_router(repos.router, prefix='/api/repos', tags=['Repositories'])
+app.include_router(bots.router, prefix='/api/bots', tags=['Bots'])
 
 
 if __name__ == '__main__':

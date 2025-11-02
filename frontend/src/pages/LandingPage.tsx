@@ -8,7 +8,7 @@ export function LoginButton() {
 
   const handleLogin = () => {
     setLoading(true)
-    window.location.href = `${import.meta.env.VITE_API_BASE_URL}/auth/github/login`
+    window.location.href = `${import.meta.env.VITE_API_BASE_URL}/api/auth/github/login`
   }
 
   return (

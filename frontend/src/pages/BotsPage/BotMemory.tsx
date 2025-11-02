@@ -9,7 +9,7 @@ export function BotMemory({ bot }: { bot: Bot }) {
 
   const fetchMemory = useCallback(async () => {
     const data = await apiFetch<{ updated_at: string; data: any }>(
-      `/bots/${bot.gid}/memory`
+      `/api/bots/${bot.gid}/memory`
     )
     setMemory(data)
   }, [bot.gid])

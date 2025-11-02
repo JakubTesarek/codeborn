@@ -59,5 +59,6 @@ class DockerAgent(AsyncProcessAgent):
         self._logger.info('Agent started.')
 
     async def stop(self) -> None:
+        """Terminate container safely."""
         await super().stop()
         await asyncio.create_subprocess_exec('docker', 'rm', '-f', self.container_name)

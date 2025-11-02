@@ -12,17 +12,7 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/auth': {
-        target: 'http://localhost:8800',
-        changeOrigin: true,
-        secure: false,
-      },
-      '/repos': {
-        target: 'http://localhost:8800',
-        changeOrigin: true,
-        secure: false,
-      },
-      '/bots': {
+      '/api': {
         target: 'http://localhost:8800',
         changeOrigin: true,
         secure: false,

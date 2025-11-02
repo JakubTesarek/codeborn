@@ -17,7 +17,7 @@ export function ReposPage() {
   async function fetchRepos() {
     setLoading(true)
     try {
-      const data = await apiFetch<ReposResponse>('/repos/')
+      const data = await apiFetch<ReposResponse>('/api/repos/')
       setRepos(data.repos)
       setLastUpdate(data.last_update)
     } finally {
@@ -28,7 +28,7 @@ export function ReposPage() {
   async function refreshRepos() {
     setLoading(true)
     try {
-      const data = await apiFetch<ReposResponse>('/repos/refresh', { method: 'POST' })
+      const data = await apiFetch<ReposResponse>('/api/repos/refresh', { method: 'POST' })
       setRepos(data.repos)
       setLastUpdate(data.last_update)
     } finally {
@@ -43,7 +43,7 @@ export function ReposPage() {
   async function updateRepo(repo: Repo) {
     setRepoLoading(repo.gid, true)
     try {
-      const data = await apiFetch<Repo>(`/repos/${repo.gid}/update`, { method: 'POST' })
+      const data = await apiFetch<Repo>(`/api/repos/${repo.gid}/update`, { method: 'POST' })
       setRepos((prev) => prev.map((r) => (r.gid === repo.gid ? data : r)))
     } finally {
       setRepoLoading(repo.gid, false)
@@ -53,7 +53,7 @@ export function ReposPage() {
   async function deleteRepo(repo: Repo) {
     setRepoLoading(repo.gid, true)
     try {
-      const data = await apiFetch<Repo>(`/repos/${repo.gid}/delete`, { method: 'POST' })
+      const data = await apiFetch<Repo>(`/api/repos/${repo.gid}/delete`, { method: 'POST' })
       setRepos((prev) => prev.map((r) => (r.gid === repo.gid ? data : r)))
     } finally {
       setRepoLoading(repo.gid, false)
