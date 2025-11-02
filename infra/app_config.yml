@@ -2,8 +2,8 @@
   become: yes
 
   vars_files:
-    - ../.production.secrets.yml
     - ../.production.config.yml
+    - ../.production.secrets.yml
 
   tasks:
     - import_tasks: tasks/secrets/vault_password.yml
