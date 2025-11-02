@@ -289,6 +289,11 @@ class FrontendConfig(BaseModel):
     domain: DomainName
     proxy_url: HttpUrl
 
+    @property
+    def proxy_origin(self) -> str:
+        """Proxy URL as a string without `/` at the end."""
+        return str(self.proxy_url).rstrip('/')
+
 
 class CodebornConfig(BaseSettings):
     """Main application configuration."""

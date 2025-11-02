@@ -26,10 +26,9 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title=config.app_name, lifespan=lifespan)
 
 app.add_middleware(SessionMiddleware, secret_key=config.api.session_key)
-print(str(config.frontend.proxy_url))
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['*'],
+    allow_origins=[config.frontend.proxy_origin],
     allow_credentials=True,
     allow_methods=['*'],
     allow_headers=['*'],
