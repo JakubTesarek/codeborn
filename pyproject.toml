@@ -16,7 +16,7 @@ packages = ["codeborn"]
 [tool.hatch.envs.default.scripts]
 build-client = "docker build -t localhost/codeborn-client:latest -f Dockerfile.client ."
 frontend-deps = "npm --prefix frontend install"
-migrate = """
+migration = """
   read -p 'Migration description: ' desc
   aerich migrate --name "$desc"
   aerich upgrade

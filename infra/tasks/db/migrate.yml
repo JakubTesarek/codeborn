@@ -1,0 +1,5 @@
+- name: Migrate DB
+  become: yes
+  command: "{{ uv_global_bin }} run aerich upgrade"
+  args:
+    chdir: "{{ app_root }}"

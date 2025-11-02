@@ -5,5 +5,6 @@
     - import_tasks: tasks/ensure_dot_env.yml
     - import_tasks: tasks/python_deps/install.yml
     - import_tasks: tasks/build_frontend.yml
+    - import_tasks: tasks/db/migrate.yml
     - import_tasks: tasks/restart_api.yml
     - import_tasks: tasks/docker/build_image.yml
