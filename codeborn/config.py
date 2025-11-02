@@ -5,14 +5,13 @@ import importlib
 import os
 from functools import cache
 from pathlib import Path
-from typing import Any, Self, TYPE_CHECKING
+from typing import Annotated, Any, Self, TYPE_CHECKING, Union
 
-import tomli
 import yaml
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic_settings import PydanticBaseSettingsSource
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, Field, HttpUrl, PositiveInt, IPvAnyAddress
 from pydantic.fields import FieldInfo
 from ansible.parsing.vault import VaultLib, VaultSecret
 
@@ -24,6 +23,13 @@ if TYPE_CHECKING:
 
 ENV_PREFIX = 'CODEBORN_'
 ENV_DELIMITER = '__'
+
+
+PositiveFloat = Annotated[float, Field(gt=0)]
+
+DomainName = Annotated[str, Field(pattern=r"^[a-z\d]([a-z\d-]{0,61}[a-z\d])?(?:\.[a-z\d-]{1,63})*$")]
+CookieDomain = Annotated[str, Field(pattern=r"^\.?[a-z\d]([a-z\d-]{0,61}[a-z\d])?(?:\.[a-z\d-]{1,63})*$")]
+Host = Annotated[Union[DomainName, IPvAnyAddress], Field()]
 
 
 class AppMode(enum.StrEnum):
@@ -55,38 +61,33 @@ def get_vault_password() -> str:
     raise ValueError('Ansible vault password missing')
 
 
-class TomlSettingsSource(PydanticBaseSettingsSource):
-    """Setting source reading variables from a toml file."""
+class YamlSettingsSource(PydanticBaseSettingsSource):
+    """Setting source reading variables from a YAML file."""
 
     def __init__(self, settings_cls: type[BaseSettings], app_mode: AppMode) -> None:
         super().__init__(settings_cls)
-        self._values = self._load_toml_file(app_mode)
+        self._values = self._load_yaml_file(app_mode)
 
-    def _load_toml_file(self, app_mode: AppMode) -> dict[str, Any]:
-        """Load toml file as a dict."""
-        toml_file = Path(f'.{app_mode}.config.toml')
-
-        if toml_file.is_file():
-            with toml_file.open('rb') as f:
-                return tomli.load(f)
+    def _load_yaml_file(self, app_mode: AppMode) -> dict[str, Any]:
+        """Load YAML file as a dict."""
+        yaml_file = Path(f'.{app_mode}.config.yml')
+        if not yaml_file.exists():
+            yaml_file = Path(f'.{app_mode}.config.yaml')
+        if yaml_file.is_file():
+            with yaml_file.open('r', encoding='utf-8') as f:
+                return yaml.safe_load(f) or {}
         return {}
 
     def get_field_value(self, field: FieldInfo, field_name: str) -> tuple[Any, str, bool]:
-        """Get a value of settings field"""
-        field_value = self._values.get(field_name)
-        return field_value, field_name, False
+        value = self._values.get(field_name)
+        return value, field_name, False
 
     def __call__(self) -> dict[str, Any]:
-        """Get all configuration values."""
         state: dict[str, Any] = {}
-
         for field_name, field in self.settings_cls.model_fields.items():
-            field_value, field_key, value_is_complex = self.get_field_value(
-                field, field_name
-            )
-            if field_value is not None:
-                state[field_key] = field_value
-
+            value, key, _ = self.get_field_value(field, field_name)
+            if value is not None:
+                state[key] = value
         return state
 
 
@@ -132,36 +133,27 @@ class LoggingConfig(BaseModel):
 class AgentsHeartbeatConfig(BaseModel):
     """Agents heartbeat configuration."""
 
-    interval: float
-    timeout: float
+    interval: PositiveFloat
+    timeout: PositiveFloat
 
 
 class AgentsRestartConfig(BaseModel):
     """Agent restart policy configuration."""
 
-    interval: float
+    interval: PositiveFloat
 
 
 class StateUpdateConfig(BaseModel):
     """Agents state update policy configuration."""
 
-    interval: float
+    interval: PositiveFloat
 
 
 class MemoryUpdateConfig(BaseModel):
     """Agents memory update policy configuration."""
 
-    interval: float
-    max_size: int
-
-
-class LifecycleConfig(BaseModel):
-    """Game engine lifecycle configuration."""
-
-    restart: AgentsRestartConfig
-    heartbeat: AgentsHeartbeatConfig
-    state_update: StateUpdateConfig
-    memory_update: MemoryUpdateConfig
+    interval: PositiveFloat
+    max_size: PositiveInt
 
 
 class AgentsConfig(BaseModel):
@@ -171,6 +163,10 @@ class AgentsConfig(BaseModel):
     base_dir: Path
     container_image: str
     version_file: str
+    restart: AgentsRestartConfig
+    heartbeat: AgentsHeartbeatConfig
+    state_update: StateUpdateConfig
+    memory_update: MemoryUpdateConfig
 
     @property
     def runtime_class(self) -> type[BotAgent]:
@@ -187,12 +183,12 @@ class DatabaseConfig(BaseModel):
     name: str
     user: str
     password: str
-    host: str
-    port: int
-    pool_min_size: int = 1
-    pool_max_size: int = 10
-    timeout: float = 30.0
-    command_timeout: float = 30.0
+    host: Host
+    port: PositiveInt
+    pool_min_size: PositiveInt = 1
+    pool_max_size: PositiveInt = 10
+    timeout: PositiveFloat = 30.0
+    command_timeout: PositiveFloat = 30.0
     models: list[str] = []
 
     @property
@@ -227,10 +223,10 @@ class DatabaseConfig(BaseModel):
 class GithubConfig(BaseModel):
     """Github configuration."""
 
-    redirect_url: str
-    access_token_url: str
-    authorize_url: str
-    api_base_url: str
+    redirect_url: HttpUrl
+    access_token_url: HttpUrl
+    authorize_url: HttpUrl
+    api_base_url: HttpUrl
     scope: list[str]
     client_id: str
     client_secret: str
@@ -240,27 +236,27 @@ class JwtConfig(BaseModel):
     """JWT configuration."""
 
     algorithm: str
-    ttl: int
+    ttl: PositiveFloat
     secret: str
 
 
 class TerrainConfig(BaseModel):
     """Terrain configuration."""
 
-    movement_cost: float
+    movement_cost: PositiveFloat
 
 
 class UnitConfig(BaseModel):
     """Unit configuration."""
 
-    stamina_recovery: float
+    stamina_recovery: PositiveFloat
 
 
 class MapGeneratorConfig(BaseModel):
     """Map generator configuration."""
 
-    width: int
-    height: int
+    width: PositiveInt
+    height: PositiveInt
 
 
 class GeneratorsConfig(BaseModel):
@@ -272,7 +268,7 @@ class GeneratorsConfig(BaseModel):
 class AuthConfig(BaseModel):
     """Authentication configuration."""
 
-    cookie_domain: str
+    cookie_domain: CookieDomain
     secure_cookie: bool
     jwt: JwtConfig
 
@@ -280,21 +276,29 @@ class AuthConfig(BaseModel):
 class ApiConfig(BaseModel):
     """API configuration."""
 
-    host: str
-    port: int
-    frontend_url: str
-    app_name: str
+    domain: DomainName
+    host: Host
+    port: PositiveInt
     auto_reload: bool = False
     session_key: str
+
+
+class FrontendConfig(BaseModel):
+    """Frontend configuration."""
+
+    domain: DomainName
+    proxy_url: HttpUrl
 
 
 class CodebornConfig(BaseSettings):
     """Main application configuration."""
 
+    app_name: str
+    email: EmailStr
     api: ApiConfig
+    frontend: FrontendConfig
     logging: LoggingConfig
     agents: AgentsConfig
-    lifecycle: LifecycleConfig
     database: DatabaseConfig
     github: GithubConfig
     auth: AuthConfig
@@ -321,7 +325,7 @@ class CodebornConfig(BaseSettings):
 
         return (
             env_settings,
-            TomlSettingsSource(settings_cls, app_mode),
+            YamlSettingsSource(settings_cls, app_mode),
             AnsibleVaultSettingsSource(settings_cls, app_mode, get_vault_password()),
             init_settings,
         )

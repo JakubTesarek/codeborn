@@ -1,6 +1,7 @@
 - hosts: all
   become: yes
   vars_files:
+    - ../.production.config.yml
     - ../.production.secrets.yml
 
   tasks:

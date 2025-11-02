@@ -79,7 +79,7 @@ async def github_callback(
         )
         await refresh_repos(github_account)
 
-    response = RedirectResponse(config.api.frontend_url)
+    response = RedirectResponse(str(config.frontend.proxy_url))
     response.set_cookie(
         key='auth_token',
         domain=config.auth.cookie_domain,
@@ -88,7 +88,7 @@ async def github_callback(
         httponly=True,
         secure=config.auth.secure_cookie,
         samesite='lax',
-        max_age=config.auth.jwt.ttl
+        max_age=int(config.auth.jwt.ttl)
     )
     return response
 

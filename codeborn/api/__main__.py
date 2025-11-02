@@ -23,12 +23,12 @@ async def lifespan(app: FastAPI):
         yield
 
 
-app = FastAPI(title=config.api.app_name, lifespan=lifespan)
+app = FastAPI(title=config.app_name, lifespan=lifespan)
 
 app.add_middleware(SessionMiddleware, secret_key=config.api.session_key)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[config.api.frontend_url],
+    allow_origins=[config.frontend.proxy_url],
     allow_credentials=True,
     allow_methods=['*'],
     allow_headers=['*'],

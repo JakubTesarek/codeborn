@@ -5,23 +5,23 @@
     - import_tasks: tasks/build_frontend.yml
     - import_tasks: tasks/cert/issue.yml
       vars:
-        domain: "{{ domain_frontend }}"
+        domain: "{{ frontend.domain }}"
     
     - import_tasks: tasks/cert/cron_renew.yml
 
     - name: Install frontend Nginx config
       template:
         src: templates/nginx_site.j2
-        dest: "/etc/nginx/sites-available/{{ domain_frontend }}"
+        dest: "/etc/nginx/sites-available/{{ frontend.domain }}"
       vars:
         web_root: "{{ frontend_dist }}"
-        domain: "{{ domain_frontend }}"
-        extra_domains: "www.{{ domain_frontend }}"
+        domain: "{{ frontend.domain }}"
+        extra_domains: "www.{{ frontend.domain }}"
       notify: Reload Nginx
 
     - import_tasks: tasks/nginx/enable_site.yml
       vars:
-        domain: "{{ domain_frontend }}"
+        domain: "{{ frontend.domain }}"
 
   handlers:
     - name: Reload Nginx

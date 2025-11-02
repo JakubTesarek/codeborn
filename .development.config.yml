@@ -1,0 +1,84 @@
+app_name: Codeborn
+email: jakub@tesarek.me
+
+logging:
+  level: DEBUG
+
+api:
+  domain: localhost
+  host: 0.0.0.0
+  port: 8800
+  auto_reload: true
+
+frontend:
+  domain: localhost
+  proxy_url: http://localhost:5173
+
+auth:
+  cookie_domain: localhost
+  secure_cookie: false
+  jwt:
+    algorithm: HS256
+    ttl: 86400  # 24 * 60 * 60
+
+agents:
+  runtime_class_name: codeborn.engine.agents.container.DockerAgent
+  base_dir: ~/user_data
+  container_image: localhost/codeborn-client:latest
+  version_file: codeborn.ini
+  heartbeat:
+    interval: 5.0
+    timeout: 25.0
+  restart:
+    interval: 10.0
+  state_update:
+    interval: 15.0
+  memory_update:
+    interval: 60.0
+    max_size: 61562880  # 5 * 1024 * 1024 = 5MB
+
+database:
+  init_schema: true
+  pool_min_size: 2
+  pool_max_size: 10
+  timeout: 30.0
+  command_timeout: 30.0
+  models:
+    - codeborn.model
+    - aerich.models
+
+github:
+  redirect_url: http://localhost:8800/api/auth/github/callback
+  access_token_url: https://github.com/login/oauth/access_token
+  authorize_url: https://github.com/login/oauth/authorize
+  api_base_url: https://api.github.com/
+  scope:
+    - read:user
+    - repo
+
+generators:
+  map:
+    width: 100
+    height: 100
+
+terrain:
+  plains:
+    movement_cost: 0.25
+  forest:
+    movement_cost: 0.5
+
+units:
+  light_infantry:
+    stamina_recovery: 0.0020
+  heavy_infantry:
+    stamina_recovery: 0.0015
+  spearmen:
+    stamina_recovery: 0.0018
+  light_cavalry:
+    stamina_recovery: 0.0022
+  heavy_cavalry:
+    stamina_recovery: 0.0016
+  archer:
+    stamina_recovery: 0.0023
+  crossbowman:
+    stamina_recovery: 0.0021

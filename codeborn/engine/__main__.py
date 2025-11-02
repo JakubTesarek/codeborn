@@ -63,9 +63,9 @@ async def main(config: CodebornConfig) -> None:
 
         try:
             async with asyncio.TaskGroup() as tg:
-                tg.create_task(lifecycle.restart(config.lifecycle.restart, agent_registry))
-                tg.create_task(lifecycle.heartbeat(config.lifecycle.heartbeat, agent_registry))
-                tg.create_task(lifecycle.state_update(config.lifecycle.state_update, agent_registry))
+                tg.create_task(lifecycle.restart(config.agents.restart, agent_registry))
+                tg.create_task(lifecycle.heartbeat(config.agents.heartbeat, agent_registry))
+                tg.create_task(lifecycle.state_update(config.agents.state_update, agent_registry))
         except Exception as exc:
             logger.exception('TaskGroup crashed cancelled', exc_info=exc)
         finally:

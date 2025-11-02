@@ -42,22 +42,22 @@
 
     - import_tasks: tasks/cert/issue.yml
       vars:
-        domain: "{{ domain_api }}"
+        domain: "{{ api.domain }}"
     
     - import_tasks: tasks/cert/cron_renew.yml
 
     - name: Install API Nginx config
       template:
         src: templates/nginx_site.j2
-        dest: "/etc/nginx/sites-available/{{ domain_api }}"
+        dest: "/etc/nginx/sites-available/{{ api.domain }}"
       vars:
-        domain: "{{ domain_api }}"
-        proxy_pass: "http://127.0.0.1:8000"
+        domain: "{{ api.domain }}"
+        proxy_pass: "http://{api.host}:{api.port}"
       notify: Reload Nginx
 
     - import_tasks: tasks/nginx/enable_site.yml
       vars:
-        domain: "{{ domain_frontend }}"
+        domain: "{{ api.domain }}"
 
   handlers:
     - name: Reload systemd

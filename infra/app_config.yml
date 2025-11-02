@@ -3,6 +3,7 @@
 
   vars_files:
     - ../.production.secrets.yml
+    - ../.production.config.yml
 
   tasks:
     - import_tasks: tasks/secrets/vault_password.yml

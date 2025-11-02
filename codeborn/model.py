@@ -353,7 +353,7 @@ class Bot(CodebornModel):
             return BotState.restarting
 
         from codeborn.config import get_config
-        heartbeat_timeout = get_config().lifecycle.heartbeat.timeout
+        heartbeat_timeout = get_config().agents.heartbeat.timeout
         if self.heartbeat_age and self.heartbeat_age.total_seconds() > heartbeat_timeout:  # type: ignore
             return BotState.unresponsive
 
@@ -393,7 +393,7 @@ class BotMemory(CodebornModel):
         """Clean and validate data before storing them to DB."""
         if self.data is not None:
             from codeborn.config import get_config
-            max_size = get_config().lifecycle.memory_update.max_size
+            max_size = get_config().agents.memory_update.max_size
             raw = json.dumps(self.data).encode()
             if len(raw) > max_size:
                 raise ValueError(f'Memory exceeds {max_size} bytes.')
